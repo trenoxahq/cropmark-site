@@ -1,0 +1,833 @@
+<title>Cropmark</title>
+<style>
+  /* ============================================================
+     Cropmark — landing page
+     Placeholder values to replace before publishing are marked
+     with  REPLACE:  in comments throughout.
+     ============================================================ */
+
+  :root {
+    /* light palette — the complete token set lives here */
+    --paper:      #EDEFF3;
+    --surface:    #F8F9FB;
+    --ink:        #14171F;
+    --ink-soft:   #3A4150;
+    --slate:      #5A6272;
+    --rule:       #CDD3DC;
+    --rule-soft:  #DDE2E9;
+    --accent:     #D6156F;
+    --accent-ink: #FFFFFF;
+    --cyan:       #12798A;
+
+    --measure: 65ch;
+    --step--1: 0.8125rem;
+    --step-0:  1rem;
+    --step-1:  1.25rem;
+    --step-2:  1.75rem;
+    --step-3:  2.5rem;
+    --step-4:  clamp(2.75rem, 7vw, 4.75rem);
+
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  /* system-dark (no stamp) — guarded so an explicit light choice still wins */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #101319;
+      --surface:    #171B23;
+      --ink:        #EDEFF3;
+      --ink-soft:   #C2C8D2;
+      --slate:      #939BA9;
+      --rule:       #2C323D;
+      --rule-soft:  #232833;
+      --accent:     #FF4D97;
+      --accent-ink: #14171F;
+      --cyan:       #4FC9D8;
+    }
+  }
+
+  /* explicit dark choice */
+  :root[data-theme="dark"] {
+    --paper:      #101319;
+    --surface:    #171B23;
+    --ink:        #EDEFF3;
+    --ink-soft:   #C2C8D2;
+    --slate:      #939BA9;
+    --rule:       #2C323D;
+    --rule-soft:  #232833;
+    --accent:     #FF4D97;
+    --accent-ink: #14171F;
+    --cyan:       #4FC9D8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 3rem);
+  }
+
+  /* --- shared type ------------------------------------------------ */
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+  .display {
+    font-size: var(--step-4);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    font-weight: 700;
+  }
+
+  .label {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin: 0;
+  }
+
+  .lede {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 46ch;
+    margin: 0;
+  }
+
+  p { max-width: var(--measure); }
+
+  a { color: inherit; }
+
+  /* --- masthead --------------------------------------------------- */
+
+  .masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+
+  .wordmark {
+    font-size: var(--step-1);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* registration mark — the print-proof motif, drawn not imported */
+  .reg {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex: none;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    position: relative;
+  }
+  .reg::before,
+  .reg::after {
+    content: "";
+    position: absolute;
+    background: var(--accent);
+  }
+  .reg::before { left: 50%; top: -0.28rem; bottom: -0.28rem; width: 1.5px; transform: translateX(-50%); }
+  .reg::after  { top: 50%; left: -0.28rem; right: -0.28rem; height: 1.5px; transform: translateY(-50%); }
+
+  .masthead nav {
+    display: flex;
+    gap: 1.5rem;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+  }
+  .masthead nav a { color: var(--slate); text-decoration: none; }
+  .masthead nav a:hover { color: var(--accent); }
+
+  /* --- hero: the input→output thesis ------------------------------ */
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    padding: clamp(3rem, 7vw, 5.5rem) 0;
+    align-items: center;
+  }
+  @media (min-width: 62rem) {
+    .hero { grid-template-columns: 1fr 1fr; }
+  }
+
+  .hero-copy { display: flex; flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  /* --- the proof: JSON in, card out ------------------------------- */
+
+  .proof {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .payload {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: 1rem 1.125rem;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--ink-soft);
+    /* The block is authored with real newlines and indentation; without this
+       they collapse and the JSON renders as one unreadable run of text. */
+    white-space: pre;
+  }
+  .payload .k { color: var(--cyan); }
+  .payload .s { color: var(--accent); }
+
+  .arrow {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .arrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* crop-mark frame around the rendered output */
+  .cropframe {
+    position: relative;
+    padding: 1.25rem;
+  }
+  .cropframe::before,
+  .cropframe::after {
+    content: "";
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-color: var(--slate);
+    border-style: solid;
+  }
+  .cropframe::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+  .cropframe::after  { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+  /* Live render from the API. Hidden until its onload fires, so a blocked or
+     failed request degrades to the mockup rather than a broken-image icon. */
+  .live-preview { display: none; }
+  .cropframe[data-live] .live-preview {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+  }
+  .cropframe[data-live] .card { display: none; }
+
+  /* the product card — the static stand-in, and the fallback if the API is
+     unreachable */
+  .card {
+    aspect-ratio: 1 / 1;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: clamp(1.25rem, 3vw, 2rem);
+    right: clamp(1.25rem, 3vw, 2rem);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    padding: 0.3rem 0.6rem;
+  }
+
+  /* stand-in for the merchant's product photo (CSP blocks remote images) */
+  .card-photo {
+    flex: 1;
+    min-height: 0;
+    background:
+      radial-gradient(circle at 32% 30%, var(--rule-soft) 0%, transparent 55%),
+      repeating-linear-gradient(45deg, var(--rule-soft) 0 10px, transparent 10px 20px);
+    border: 1px solid var(--rule-soft);
+    display: grid;
+    place-items: center;
+  }
+  .card-photo span {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+  }
+
+  .card-title {
+    font-size: var(--step-2);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+  }
+  .card-sub { font-size: var(--step--1); color: var(--slate); margin: 0; }
+  .card-price {
+    font-size: var(--step-2);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .card-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 0.875rem;
+  }
+
+  /* --- buttons ---------------------------------------------------- */
+
+  .btn {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.8rem 1.4rem;
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); opacity: 1; }
+
+  .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+  :where(a, button, input):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* --- sections --------------------------------------------------- */
+
+  section { border-top: 1px solid var(--rule); padding: clamp(3rem, 6vw, 4.5rem) 0; }
+
+  .sec-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+  }
+  .sec-head h2 {
+    font-size: var(--step-3);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  /* --- template specimens ----------------------------------------- */
+
+  .specimens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  .spec {
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  .spec-swatch {
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--rule-soft);
+    background:
+      linear-gradient(135deg, var(--rule-soft) 0%, transparent 60%);
+    display: grid;
+    place-items: center;
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+  }
+  .spec h3 { font-size: var(--step-0); letter-spacing: -0.01em; }
+  .spec p { font-size: var(--step--1); color: var(--slate); margin: 0; }
+  .spec .fields {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    word-break: break-word;
+  }
+  .spec[data-status="soon"] { opacity: 0.62; }
+  .pill {
+    align-self: flex-start;
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--rule);
+    color: var(--slate);
+  }
+  .pill[data-live] { border-color: var(--accent); color: var(--accent); }
+
+  /* --- quickstart -------------------------------------------------- */
+
+  pre {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    line-height: 1.75;
+    color: var(--ink-soft);
+  }
+  pre .c { color: var(--slate); }
+  pre .f { color: var(--cyan); }
+
+  /* --- pricing ----------------------------------------------------- */
+
+  .table-scroll { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--step-0);
+    min-width: 34rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 1rem 1rem 1rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: baseline;
+  }
+  thead th {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 400;
+    border-bottom-color: var(--rule);
+  }
+  td.num { font-variant-numeric: tabular-nums; }
+  .tier-name { font-weight: 700; }
+  .price { font-weight: 700; font-variant-numeric: tabular-nums; }
+  tr[data-free] .price { color: var(--accent); }
+
+  .note {
+    font-size: var(--step--1);
+    color: var(--slate);
+    margin-top: 1.25rem;
+  }
+
+  /* --- signup ------------------------------------------------------ */
+
+  .signup {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  @media (min-width: 52rem) {
+    .signup { grid-template-columns: 1.1fr 1fr; }
+  }
+
+  form { display: flex; flex-direction: column; gap: 0.75rem; }
+  .field-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  input[type="email"] {
+    flex: 1 1 16rem;
+    padding: 0.8rem 1rem;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  input[type="email"]::placeholder { color: var(--slate); }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    color: var(--slate);
+  }
+  footer a { color: var(--slate); }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <!-- REPLACE: product name, here and in <title> -->
+    <div class="wordmark"><span class="reg" aria-hidden="true"></span>Cropmark</div>
+    <nav>
+      <a href="#templates">Templates</a>
+      <a href="#start">Quickstart</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#access">Get a key</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-copy">
+      <p class="label">Image generation API for online stores</p>
+      <h1 class="display">Send product JSON.<br>Get a finished <em>marketing image</em>.</h1>
+      <p class="lede">
+        One HTTP call turns a product title, price, and photo into a ready-to-post PNG.
+        Built for store owners, not for designers — no editor, no canvas, no waiting.
+      </p>
+      <div class="btn-row">
+        <a class="btn" href="#access">Get an API key</a>
+        <a class="btn btn-ghost" href="#start">See the request</a>
+      </div>
+      <p class="label">50 images a month, free, permanently</p>
+    </div>
+
+    <div class="proof">
+      <p class="label">Request</p>
+      <!-- Must stay in sync with what /preview renders by default: the page's
+           whole claim is that this payload produces the image below it. -->
+      <div class="payload">{
+  <span class="k">"template"</span>: <span class="s">"product-card"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"title"</span>: <span class="s">"Stoneware Coffee Mug"</span>,
+    <span class="k">"subtitle"</span>: <span class="s">"350ml · Matte glaze"</span>,
+    <span class="k">"price"</span>: <span class="s">"$24.00"</span>,
+    <span class="k">"badge"</span>: <span class="s">"SALE"</span>,
+    <span class="k">"image_url"</span>: <span class="s">"https://…/mug.jpg"</span>
+  }
+}</div>
+
+      <p class="arrow">Response · 1080 × 1080 PNG</p>
+      <p class="label" style="text-transform:none;letter-spacing:0.02em">
+        The image below is rendered live by the API right now —
+        <a href="https://cropmark-api-production.up.railway.app/preview?title=Your+Product&amp;price=%2429.00&amp;badge=SALE"
+           style="color:var(--accent)">change the text yourself</a>.
+      </p>
+
+      <div class="cropframe">
+        <!-- The live API rendering itself. If it loads, it replaces the static
+             mockup below; if it is blocked or the service is down, the mockup
+             stays and the page still reads correctly. Fail-safe by default. -->
+        <img class="live-preview"
+             src="https://cropmark-api-production.up.railway.app/preview"
+             alt="Live render from the API: a product card for a stoneware coffee mug"
+             onload="this.parentNode.setAttribute('data-live','')">
+        <div class="card">
+          <div class="card-badge">SALE</div>
+          <div class="card-photo"><span>PRODUCT PHOTO</span></div>
+          <div class="card-title">Copper Pour-Over Kettle</div>
+          <div class="card-foot">
+            <p class="card-sub">900ml · Gooseneck</p>
+            <div class="card-price">$68.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="templates">
+    <div class="sec-head">
+      <p class="label">Specimens</p>
+      <h2>Four templates, built for retail</h2>
+      <p class="lede">Every template declares its own fields. Ask the API what it accepts and it answers.</p>
+    </div>
+
+    <div class="specimens">
+      <article class="spec">
+        <div class="spec-swatch">1080 × 1080</div>
+        <span class="pill" data-live>Live</span>
+        <h3>Product card</h3>
+        <p>The everyday post. Photo, title, price, optional sale badge.</p>
+        <div class="fields">title · price · image_url<br>badge? · subtitle?</div>
+      </article>
+
+      <article class="spec" data-status="soon">
+        <div class="spec-swatch">1200 × 630</div>
+        <span class="pill">Next</span>
+        <h3>Social share card</h3>
+        <p>Open Graph images for collection and blog pages.</p>
+        <div class="fields">title<br>subtitle? · image_url? · logo_url?</div>
+      </article>
+
+      <article class="spec" data-status="soon">
+        <div class="spec-swatch">1080 × 1080</div>
+        <span class="pill">Next</span>
+        <h3>Back in stock</h3>
+        <p>Restock announcements with a call to action.</p>
+        <div class="fields">product_name · cta · image_url</div>
+      </article>
+
+      <article class="spec" data-status="soon">
+        <div class="spec-swatch">1080 × 1080</div>
+        <span class="pill">Next</span>
+        <h3>Testimonial card</h3>
+        <p>Turn a five-star review into something postable.</p>
+        <div class="fields">quote · author<br>avatar_url?</div>
+      </article>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="sec-head">
+      <p class="label">Quickstart</p>
+      <h2>Working image in one call</h2>
+    </div>
+    <!-- Live Railway domain. Swap for a custom domain if you add one. -->
+    <pre><span class="c"># PNG straight to disk</span>
+curl -X POST https://cropmark-api-production.up.railway.app/generate \
+  -H <span class="f">"X-API-Key: $CROPMARK_KEY"</span> \
+  -H <span class="f">"Content-Type: application/json"</span> \
+  -d <span class="f">'{"template":"product-card","data":{
+        "title":"Copper Pour-Over Kettle",
+        "price":"$68.00",
+        "badge":"SALE",
+        "image_url":"https://example.com/kettle.jpg"}}'</span> \
+  --output kettle.png
+
+<span class="c"># Ask what a template needs</span>
+curl https://cropmark-api-production.up.railway.app/templates -H <span class="f">"X-API-Key: $CROPMARK_KEY"</span></pre>
+    <p class="note">
+      PNG by default, JPEG when payload size matters, base64 with <code>?response=base64</code>.
+      Identical requests are cached and return without re-rendering.
+    </p>
+  </section>
+
+  <section id="pricing">
+    <div class="sec-head">
+      <p class="label">Pricing</p>
+      <h2>Pay for volume, not seats</h2>
+      <p class="lede">The free tier does not expire. It is not a trial.</p>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Tier</th>
+            <th scope="col">Monthly</th>
+            <th scope="col">Images / month</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- REPLACE: confirm these against real cost-per-image before publishing -->
+          <tr data-free>
+            <td class="tier-name">Free</td>
+            <td class="price">$0</td>
+            <td class="num">50</td>
+            <td>All templates. No card.</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Basic</td>
+            <td class="price">$15</td>
+            <td class="num">2,000</td>
+            <td>For a single store.</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Pro</td>
+            <td class="price">$49</td>
+            <td class="num">15,000</td>
+            <td>For catalogue-wide runs.</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Ultra</td>
+            <td class="price">$199</td>
+            <td class="num">100,000</td>
+            <td>Priority rendering.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Also available on RapidAPI if you would rather keep it on one bill.</p>
+  </section>
+
+  <section id="access">
+    <div class="signup">
+      <div class="sec-head" style="margin-bottom:0">
+        <p class="label">Access</p>
+        <h2>Get an API key</h2>
+        <p class="lede">
+          Keys are going out in batches while the first templates settle.
+          Leave an email and yours arrives with the next one.
+        </p>
+      </div>
+      <div>
+        <form id="signup-form" method="post" novalidate>
+          <div class="field-row">
+            <input type="email" id="signup-email" name="email" required
+                   placeholder="you@yourstore.com" aria-label="Email address"
+                   autocomplete="email">
+            <button class="btn" type="submit" id="signup-submit">Request key</button>
+          </div>
+
+          <!-- Honeypot. Real people never see it; bots fill every field they
+               find, and Formspree discards submissions where _gotcha is set. -->
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"
+                 aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
+          <input type="hidden" name="_subject" value="Cropmark API key request">
+
+          <!-- aria-live so screen readers announce the result, which a purely
+               visual state change would not. -->
+          <p class="note" id="signup-status" style="margin-top:0.25rem" role="status" aria-live="polite">
+            One email when your key is ready. Nothing else.
+          </p>
+        </form>
+
+        <p class="note" style="margin-top:1.25rem">
+          Prefer to start right now?
+          <a href="https://rapidapi.com/trenoxahq/api/cropmark-product-image-generation"
+             style="color:var(--accent)">Subscribe on RapidAPI</a> — the free tier needs no card.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ===================================================================
+    // REPLACE THIS with your Formspree form ID.
+    //
+    //   1. formspree.io → sign up (free tier: 50 submissions/month)
+    //   2. New Form → name it "Cropmark waitlist"
+    //   3. Copy the ID from the endpoint it gives you:
+    //        https://formspree.io/f/xyzabcde   →   'xyzabcde'
+    //   4. Paste it below and re-upload this page.
+    //
+    // Until it is set, the form tells the visitor to email instead of
+    // silently pretending to have captured their address.
+    // ===================================================================
+    var FORMSPREE_ID = 'YOUR_FORM_ID';
+    var CONTACT_EMAIL = 'hello@example.com'; // REPLACE with a real address
+
+    (function () {
+      var form = document.getElementById('signup-form');
+      var email = document.getElementById('signup-email');
+      var button = document.getElementById('signup-submit');
+      var status = document.getElementById('signup-status');
+
+      var IDLE = 'One email when your key is ready. Nothing else.';
+
+      function setStatus(message, tone) {
+        status.textContent = message;
+        status.style.color = tone === 'error' ? 'var(--accent)'
+          : tone === 'success' ? 'var(--ink)'
+          : 'var(--slate)';
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Validate here rather than relying on the browser bubble, so the
+        // message lands in the same place as every other response.
+        if (!email.checkValidity() || !email.value.trim()) {
+          setStatus('That email address does not look right — check it and try again.', 'error');
+          email.focus();
+          return;
+        }
+
+        if (FORMSPREE_ID === 'YOUR_FORM_ID') {
+          setStatus('Signup is not connected yet — email ' + CONTACT_EMAIL + ' and I will send a key.', 'error');
+          return;
+        }
+
+        // Captured before the reset below clears the field — otherwise the
+        // confirmation reads "on the way to ." with the address missing.
+        var submitted = email.value.trim();
+
+        button.disabled = true;
+        var original = button.textContent;
+        button.textContent = 'Sending…';
+        setStatus('Sending…');
+
+        fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form)
+        })
+          .then(function (response) {
+            if (response.ok) {
+              form.reset();
+              setStatus('Got it. Your key is on the way to ' + submitted + '.', 'success');
+              button.textContent = 'Requested';
+              // Leave the button disabled: the address is captured, and a
+              // second identical submission only creates duplicate work.
+              return;
+            }
+            // Formspree returns field-level errors as JSON; surface the real
+            // reason rather than a generic failure.
+            return response.json().then(function (data) {
+              var detail = data && data.errors && data.errors.length
+                ? data.errors.map(function (e) { return e.message; }).join(', ')
+                : 'Something went wrong.';
+              throw new Error(detail);
+            });
+          })
+          .catch(function (error) {
+            // A rejected fetch means the request never completed — offline, DNS,
+            // blocked. "Failed to fetch" is browser jargon, so say what it means.
+            var reason = error instanceof TypeError
+              ? 'Could not reach the signup service'
+              : error.message;
+            // Formspree's messages arrive without trailing punctuation, which
+            // would otherwise run straight into the sentence that follows.
+            if (!/[.!?]$/.test(reason)) reason += '.';
+            setStatus(reason + ' Email ' + CONTACT_EMAIL + ' instead and I will sort it out.', 'error');
+            button.disabled = false;
+            button.textContent = original;
+          });
+      });
+
+      // Clear a stale error once the visitor starts correcting it.
+      email.addEventListener('input', function () {
+        if (status.textContent !== IDLE && !button.disabled) setStatus(IDLE);
+      });
+    })();
+  </script>
+
+  <footer>
+    <span>Cropmark — image generation for online stores</span>
+    <!-- REPLACE: real contact address -->
+    <span><a href="mailto:hello@example.com">hello@example.com</a></span>
+  </footer>
+
+</div>
