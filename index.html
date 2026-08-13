@@ -541,7 +541,7 @@
       <p class="arrow">Response · 1080 × 1080 PNG</p>
       <p class="label" style="text-transform:none;letter-spacing:0.02em">
         The image below is rendered live by the API right now —
-        <a href="https://cropmark-api-production.up.railway.app/preview?title=Your+Product&amp;price=%2429.00&amp;badge=SALE"
+        <a href="https://api.trenoxahq.com/preview?title=Your+Product&amp;price=%2429.00&amp;badge=SALE"
            style="color:var(--accent)">change the text yourself</a>.
       </p>
 
@@ -550,7 +550,7 @@
              mockup below; if it is blocked or the service is down, the mockup
              stays and the page still reads correctly. Fail-safe by default. -->
         <img class="live-preview"
-             src="https://cropmark-api-production.up.railway.app/preview"
+             src="https://api.trenoxahq.com/preview"
              alt="Live render from the API: a product card for a stoneware coffee mug"
              onload="this.parentNode.setAttribute('data-live','')">
         <div class="card">
@@ -615,7 +615,7 @@
     </div>
     <!-- Live Railway domain. Swap for a custom domain if you add one. -->
     <pre><span class="c"># PNG straight to disk</span>
-curl -X POST https://cropmark-api-production.up.railway.app/generate \
+curl -X POST https://api.trenoxahq.com/generate \
   -H <span class="f">"X-API-Key: $CROPMARK_KEY"</span> \
   -H <span class="f">"Content-Type: application/json"</span> \
   -d <span class="f">'{"template":"product-card","data":{
@@ -626,7 +626,7 @@ curl -X POST https://cropmark-api-production.up.railway.app/generate \
   --output kettle.png
 
 <span class="c"># Ask what a template needs</span>
-curl https://cropmark-api-production.up.railway.app/templates -H <span class="f">"X-API-Key: $CROPMARK_KEY"</span></pre>
+curl https://api.trenoxahq.com/templates -H <span class="f">"X-API-Key: $CROPMARK_KEY"</span></pre>
     <p class="note">
       PNG by default, JPEG when payload size matters, base64 with <code>?response=base64</code>.
       Identical requests are cached and return without re-rendering.
