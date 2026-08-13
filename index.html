@@ -354,6 +354,69 @@
     line-height: 1.1;
   }
 
+  /* --- before / after ---------------------------------------------- */
+
+  .compare {
+    display: grid;
+    /* Stacked on narrow screens; the arrow rotates to point down. */
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  @media (min-width: 48rem) {
+    .compare { grid-template-columns: 1fr auto 1fr; gap: 2rem; }
+  }
+
+  .compare-panel {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .compare-shot {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: 0.75rem;
+    /* Both panels share one square frame so the comparison is like for like —
+       different aspect ratios would make the difference look like cropping. */
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .compare-panel[data-after] .compare-shot { border-color: var(--accent); }
+
+  /* Explicit sizing rather than max-height: a percentage max-height does not
+     resolve inside a grid box of indefinite height, and the image overflows. */
+  .compare-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .compare-panel figcaption {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+  .compare-panel[data-after] figcaption { color: var(--accent); }
+
+  .compare-arrow {
+    font-size: var(--step-3);
+    color: var(--accent);
+    text-align: center;
+    line-height: 1;
+    transform: rotate(90deg);
+  }
+  @media (min-width: 48rem) {
+    .compare-arrow { transform: none; }
+  }
+
   /* --- template specimens ----------------------------------------- */
 
   .specimens {
@@ -501,6 +564,7 @@
     <!-- REPLACE: product name, here and in <title> -->
     <div class="wordmark"><span class="reg" aria-hidden="true"></span>Cropmark</div>
     <nav>
+      <a href="#difference">Before / after</a>
       <a href="#templates">Templates</a>
       <a href="#start">Quickstart</a>
       <a href="#pricing">Pricing</a>
@@ -565,6 +629,55 @@
       </div>
     </div>
   </div>
+
+  <section id="difference">
+    <div class="sec-head">
+      <p class="label">Before / after</p>
+      <h2>The photo you have, and the post you need</h2>
+      <!-- No "on the right": the panels stack vertically on a phone, where a good
+           share of small merchants will read this. -->
+      <p class="lede">
+        Same product photograph. The finished card came back from the API in under a second.
+      </p>
+    </div>
+
+    <div class="compare">
+      <figure class="compare-panel">
+        <div class="compare-shot">
+          <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=900"
+               alt="A plain product photograph of a coffee mug, as uploaded to a store listing"
+               loading="lazy">
+        </div>
+        <figcaption>What most shops post — the bare product photo</figcaption>
+      </figure>
+
+      <div class="compare-arrow" aria-hidden="true">&rarr;</div>
+
+      <figure class="compare-panel" data-after>
+        <div class="compare-shot">
+          <!-- Rendered live, like the hero. If it cannot load, the caption still
+               explains the panel rather than leaving an empty frame. -->
+          <img src="https://api.trenoxahq.com/preview?title=Stoneware+Coffee+Mug&price=%2424.00&badge=SALE&subtitle=350ml+%C2%B7+Matte+glaze"
+               alt="The same mug rendered as a product card with its name, price and a SALE badge"
+               loading="lazy">
+        </div>
+        <figcaption>Title, price, badge — sized for a feed</figcaption>
+      </figure>
+    </div>
+
+    <p class="note" style="margin-top:1.5rem">
+      No editor, no canvas, no design step. Send the product data you already have and the
+      card comes back finished — one product or your whole catalogue.
+      <br>
+      <!-- Both panels are live, so the right one carries the watermark the public
+           preview endpoint stamps on everything. Saying so removes the obvious
+           doubt: that paid output looks like this too. -->
+      The card above is rendered right now by the free
+      <a href="https://api.trenoxahq.com/preview?title=Your+Product&amp;price=%2429.00&amp;badge=SALE"
+         style="color:var(--accent)">preview endpoint</a>, which watermarks everything it
+      makes. Images from <code>/generate</code> have no watermark.
+    </p>
+  </section>
 
   <section id="templates">
     <div class="sec-head">
