@@ -799,7 +799,7 @@ curl https://api.trenoxahq.com/templates -H <span class="f">"X-API-Key: $CROPMAR
         </tbody>
       </table>
     </div>
-    <p class="note">Also available on RapidAPI if you would rather keep it on one bill.</p>
+    <p class="note">Plans and billing are handled by RapidAPI.</p>
   </section>
 
   <section id="access">
@@ -808,149 +808,25 @@ curl https://api.trenoxahq.com/templates -H <span class="f">"X-API-Key: $CROPMAR
         <p class="label">Access</p>
         <h2>Get an API key</h2>
         <p class="lede">
-          Keys are going out in batches while the first templates settle.
-          Leave an email and yours arrives with the next one.
+          Keys are issued through RapidAPI. Subscribe to the free tier and make your first call in a minute. No card needed.
         </p>
       </div>
       <div>
-        <form id="signup-form" method="post" novalidate>
-          <div class="field-row">
-            <input type="email" id="signup-email" name="email" required
-                   placeholder="you@yourstore.com" aria-label="Email address"
-                   autocomplete="email">
-            <button class="btn" type="submit" id="signup-submit">Request key</button>
-          </div>
-
-          <!-- Honeypot. Real people never see it; bots fill every field they
-               find, and Formspree discards submissions where _gotcha is set. -->
-          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"
-                 aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
-          <input type="hidden" name="_subject" value="Cropmark API key request">
-
-          <!-- aria-live so screen readers announce the result, which a purely
-               visual state change would not. -->
-          <p class="note" id="signup-status" style="margin-top:0.25rem" role="status" aria-live="polite">
-            One email when your key is ready. Nothing else.
-          </p>
-        </form>
-
+        <p><a class="btn" href="https://rapidapi.com/trenoxahq/api/cropmark-product-image-generation">Get a free key on RapidAPI</a></p>
         <p class="note" style="margin-top:1.25rem">
-          Prefer to start right now?
-          <a href="https://rapidapi.com/trenoxahq/api/cropmark-product-image-generation"
-             style="color:var(--accent)">Subscribe on RapidAPI</a> — the free tier needs no card.
+          Questions or a higher volume plan? Email
+          <a href="mailto:support@trenoxahq.com" style="color:var(--accent)">support@trenoxahq.com</a>.
         </p>
       </div>
     </div>
   </section>
-
-  <script>
-    // ===================================================================
-    // REPLACE THIS with your Formspree form ID.
-    //
-    //   1. formspree.io → sign up (free tier: 50 submissions/month)
-    //   2. New Form → name it "Cropmark waitlist"
-    //   3. Copy the ID from the endpoint it gives you:
-    //        https://formspree.io/f/xyzabcde   →   'xyzabcde'
-    //   4. Paste it below and re-upload this page.
-    //
-    // Until it is set, the form tells the visitor to email instead of
-    // silently pretending to have captured their address.
-    // ===================================================================
-    var FORMSPREE_ID = 'YOUR_FORM_ID';
-    var CONTACT_EMAIL = 'hello@example.com'; // REPLACE with a real address
-
-    (function () {
-      var form = document.getElementById('signup-form');
-      var email = document.getElementById('signup-email');
-      var button = document.getElementById('signup-submit');
-      var status = document.getElementById('signup-status');
-
-      var IDLE = 'One email when your key is ready. Nothing else.';
-
-      function setStatus(message, tone) {
-        status.textContent = message;
-        status.style.color = tone === 'error' ? 'var(--accent)'
-          : tone === 'success' ? 'var(--ink)'
-          : 'var(--slate)';
-      }
-
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        // Validate here rather than relying on the browser bubble, so the
-        // message lands in the same place as every other response.
-        if (!email.checkValidity() || !email.value.trim()) {
-          setStatus('That email address does not look right — check it and try again.', 'error');
-          email.focus();
-          return;
-        }
-
-        if (FORMSPREE_ID === 'YOUR_FORM_ID') {
-          setStatus('Signup is not connected yet — email ' + CONTACT_EMAIL + ' and I will send a key.', 'error');
-          return;
-        }
-
-        // Captured before the reset below clears the field — otherwise the
-        // confirmation reads "on the way to ." with the address missing.
-        var submitted = email.value.trim();
-
-        button.disabled = true;
-        var original = button.textContent;
-        button.textContent = 'Sending…';
-        setStatus('Sending…');
-
-        fetch('https://formspree.io/f/' + FORMSPREE_ID, {
-          method: 'POST',
-          headers: { Accept: 'application/json' },
-          body: new FormData(form)
-        })
-          .then(function (response) {
-            if (response.ok) {
-              form.reset();
-              setStatus('Got it. Your key is on the way to ' + submitted + '.', 'success');
-              button.textContent = 'Requested';
-              // Leave the button disabled: the address is captured, and a
-              // second identical submission only creates duplicate work.
-              return;
-            }
-            // Formspree returns field-level errors as JSON; surface the real
-            // reason rather than a generic failure.
-            return response.json().then(function (data) {
-              var detail = data && data.errors && data.errors.length
-                ? data.errors.map(function (e) { return e.message; }).join(', ')
-                : 'Something went wrong.';
-              throw new Error(detail);
-            });
-          })
-          .catch(function (error) {
-            // A rejected fetch means the request never completed — offline, DNS,
-            // blocked. "Failed to fetch" is browser jargon, so say what it means.
-            var reason = error instanceof TypeError
-              ? 'Could not reach the signup service'
-              : error.message;
-            // Formspree's messages arrive without trailing punctuation, which
-            // would otherwise run straight into the sentence that follows.
-            if (!/[.!?]$/.test(reason)) reason += '.';
-            setStatus(reason + ' Email ' + CONTACT_EMAIL + ' instead and I will sort it out.', 'error');
-            button.disabled = false;
-            button.textContent = original;
-          });
-      });
-
-      // Clear a stale error once the visitor starts correcting it.
-      email.addEventListener('input', function () {
-        if (status.textContent !== IDLE && !button.disabled) setStatus(IDLE);
-      });
-    })();
-  </script>
 
   <footer>
     <span>Cropmark — image generation for online stores</span>
     <span style="display:flex;gap:1.25rem;flex-wrap:wrap">
       <a href="https://documenter.getpostman.com/view/57363638/2sBY4WpxHM">Postman docs</a>
       <a href="https://rapidapi.com/trenoxahq/api/cropmark-product-image-generation">RapidAPI</a>
-      <!-- REPLACE: real contact address -->
-      <a href="mailto:hello@example.com">hello@example.com</a>
+      <a href="mailto:support@trenoxahq.com">support@trenoxahq.com</a>
     </span>
   </footer>
 
