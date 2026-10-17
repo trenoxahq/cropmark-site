@@ -1,10 +1,5 @@
-# Cropmark — landing page
+# Cropmark (retired)
 
-Static marketing page for the Cropmark product image generation API.
-Served by GitHub Pages from `index.html`.
-
-The API itself lives in a separate private repository. This page has no build
-step: edit `index.html`, push, and Pages redeploys.
-
-- API listing: https://rapidapi.com/trenoxahq/api/cropmark-product-image-generation
-- Live preview endpoint: https://cropmark-api-production.up.railway.app/preview
+Landing page for the Cropmark product image API, retired in October 2026.
+The page now only says the API is switched off and links to trenoxahq.com.
+The API code is archived at github.com/trenoxahq/cropmark-api (private).
